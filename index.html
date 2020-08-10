@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quick start. Local static application</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div id="name"></div>
+    <script src="//api.bitrix24.com/api/v1/"></script>
+    <script>
+        //Make a call to REST when JS SDK is loaded
+        BX24.init(function(){
+
+            BX24.callMethod('crm.deal.list', {
+                // order: {'ID'},
+                // select: {'ID', 'TITLE'}
+            }, function(result){
+                if(result.error())
+            console.error(result.error());
+        else
+        {
+            console.dir(result.data());             
+            if(result.more())
+                result.next();
+
+            var dealid = document.getElementById('dealid');
+            var dealurl = document.getElementById('dealurl');
+
+
+            for (var i = 0; i < result.data().length; i++) {
+                $(function() {
+                    $('table').find('tbody').append('<tr id="dealstr"><td id="dealid">'+result.data()[i]['ID']+'</td><td id="dealurl"><a href="https://b24-ozpsbg.bitrix24.ru/crm/deal/details/'+result.data()[i]['ID']+'/" target="_blank">'+result.data()[i]['TITLE']+'</td></tr>');
+                });
+                console.log(result.data()[i])
+            }
+
+        }
+            });
+
+            console.log('B24 SDK is ready!', BX24.isAdmin());
+        });
+    </script>
+    <table>
+        <thead>
+        <tr>
+            <th>Сделка</th>
+            <th>ID</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+    </table>
+
+    <form action="" method="?">
+        <input type="text" id="dealname" ></input>
+        <input type="submit" value="Создать">
+    </form>
+
+    <script>
+        var dealget = document.getElementById('dealname').value;
+
+        fetch('https://b24-ozpsbg.bitrix24.ru/rest/1/hfqp38jx1cukjdbg/crm.deal.add', {
+         method: "POST",
+         headers:{
+           'Content-Type': 'application/json'
+         },
+         body:JSON.stringify({
+           fields: {
+             "TITLE": dealget,
+             "ASSIGNED_BY_ID": 1
+           }
+         })
+       }).then(function(response) {
+         return response.json();
+       }).then(function(post){
+         console.log(post);
+       });
+    </script>
+
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
+</html>
